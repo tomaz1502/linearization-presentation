@@ -1,0 +1,751 @@
+\documentclass[usepdftitle=false,aspectratio=169,usenames,dvipsnames]{beamer}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{xspace}
+\usepackage{xparse}
+\usepackage[yyyymmdd]{datetime}
+\usepackage{ulem}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{booktabs}
+\usepackage{stmaryrd}
+\usepackage{subcaption}
+\usepackage{bussproofs}
+\usepackage{mathpartir}
+\usepackage{minted}
+% \usemintedstyle{trac}
+\usepackage{xcolor}
+\usepackage{proof}
+\usepackage{tcolorbox}
+\usepackage{relsize}
+
+\usepackage{tikz}
+\def\lstlanguagefiles{lstlean.tex}
+\lstset{language=lean}
+
+\definecolor{keywordcolor}{rgb}{0.7, 0.1, 0.1}   % red
+\definecolor{tacticcolor}{rgb}{0.0, 0.1, 0.6}    % blue
+\definecolor{commentcolor}{rgb}{0.4, 0.4, 0.4}   % grey
+\definecolor{symbolcolor}{rgb}{0.0, 0.1, 0.6}    % blue
+\definecolor{sortcolor}{rgb}{0.1, 0.5, 0.1}      % green
+\definecolor{attributecolor}{rgb}{0.7, 0.1, 0.1} % red
+\usetikzlibrary{shapes,arrows,positioning,decorations.markings,matrix,fit,calc}
+\tikzstyle{line} = [draw, -latex']
+\tikzstyle{rline} = [draw, latex'-]
+\pgfdeclarelayer{background}
+\pgfsetlayers{background,main}
+\EnableBpAbbreviations
+
+\DeclareUnicodeCharacter{2081}{$_{1}$}
+\DeclareUnicodeCharacter{03B1}{$\alpha$}
+\DeclareUnicodeCharacter{2200}{$\mathbb{\forall}$}
+\DeclareUnicodeCharacter{2203}{$\mathbb{\exists}$}
+
+\DeclareUnicodeCharacter{2265}{$\ge$}
+\DeclareUnicodeCharacter{2227}{$\wedge$}
+\DeclareUnicodeCharacter{2243}{$\simeq$}
+\DeclareUnicodeCharacter{2264}{$\mathbb{\le}$}
+\DeclareUnicodeCharacter{2200}{$\mathbb{\forall}$}
+\DeclareUnicodeCharacter{2228}{$\vee$}
+\DeclareUnicodeCharacter{2084}{$_{4}$}
+\DeclareUnicodeCharacter{2083}{$_{3}$}
+\DeclareUnicodeCharacter{2082}{$_{2}$}
+\DeclareUnicodeCharacter{2081}{$_{1}$}
+\DeclareUnicodeCharacter{208A}{$_{+}$}
+\DeclareUnicodeCharacter{1D62}{$_{i}$}
+\DeclareUnicodeCharacter{208B}{$_{-}$}
+\DeclareUnicodeCharacter{03B1}{$\alpha$}
+
+\hypersetup{
+  pdftitle={Formalization of a Proof Calculus for Incremental
+Linearization for Satisfiability Modulo Nonlinear
+Arithmetic and Transcendental Functions}
+  pdfauthor={Tomaz Mascarenhas, Harun Khan, Abdalrhman Mohamed, Andrew Reynolds, Haniel Barbosa, Clark Barrett, Cesare Tinelli},
+  pdfkeywords={},
+  pdfborder={0 0 0}
+  draft=false,
+  bookmarksnumbered,
+  bookmarksdepth=2,
+  bookmarksopenlevel=2,
+  bookmarksopen
+}
+
+\renewcommand{\dateseparator}{--}
+
+%%% BEGIN Defining style
+\useinnertheme[outline]{chamfered}
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+\usefonttheme[onlymath]{serif}%beamer math looks like article math
+\usecolortheme{seahorse}
+\setbeamercolor{palette quinary}{use=structure,fg=black,bg=white}
+%%% END Defining style
+
+%%% BEGIN Biblatex for references
+\usepackage[backend=bibtex,
+doi=false,isbn=false,url=false,
+% show initials only
+style=alphabetic,
+% Show name
+% style=authoryear-icomp,
+% citation label has 4 initials if up to 4 authors, 3 and "+" otherwise
+maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
+% citation label has first author's name et al
+% maxcitenames=2,backend=biber]{biblatex}
+
+\bibliography{./refs.bib}
+
+%%%%%%%%%%%%% macros
+
+\mathchardef\mhyphen="2D % Define a "math hyphen"
+
+\usepackage{pifont}
+
+\newcommand{\bluecheck}{{\color{blue}\checkmark}}
+\newcommand{\greencheck}{{\color{blue}\checkmark}}
+\newcommand{\redmark}{\color{red}{\ding{55}}}
+
+\newcommand\vvthinspace{\kern+0.041667em}
+\newcommand\vthinspace{\kern+0.083333em}
+\newcommand\negvthinspace{\kern-0.083333em}
+\newcommand\negvvthinspace{\kern-0.041667em}
+
+\newcommand\FV[1]{\textrm{FV}(#1)}
+
+\newcommand\sym[1]{\mathsf{#1}}
+
+%ADT font macros
+\newcommand{\typename}[1]{\mathbf{\mathrm{#1}}}
+\newcommand{\consname}[1]{\mathrm{#1}}
+\newcommand{\selname}[1]{\mathrm{#1}}
+\newcommand{\testername}[1]{\mathrm{#1}}
+
+\newcommand{\SInt}{\typename{Int}}
+\newcommand{\SBool}{\typename{Bool}}
+\newcommand{\SStr}{\typename{Str}}
+
+\newcommand{\evalfn}[1]{\mathrm{eval}_{#1}}
+
+\DeclareDocumentCommand{\qnt}{ O{n} m O{\psi}}{\innerqnt(#2,#1) #3}
+\def\innerqnt(#1,#2,#3){#1 \bar #2.\>}
+
+\DeclareDocumentCommand{\terms}{ m O{}}{\mathbf{T}_{#2}(#1)}
+
+\DeclareDocumentCommand{\bfapp}{ O{f} m O{n}}{#1({\bar #2}_{#3})}
+\DeclareDocumentCommand{\enum}{ O{n} m O{,\,} O{} O{1}}{#2_#5#4#3\dots #3#2_{#1}#4}
+\DeclareDocumentCommand{\benum}{ O{n} m O{\mapsto} O{} O{,\,} O{1}}{\innerbenum(#2,#3,#6,#4)#5\dots #5\innerbenum(#2,#3,#1,#4)}
+\def\innerbenum(#1,#2,#3,#4,#5){#1_{#4}#3 #5{#2_{#4}}}
+
+\DeclareDocumentCommand{\bfenum}{O{\mapsto} m}{\innerbfenum(#2,#1)}
+  \def\innerbfenum(#1,#2,#3){\bar #1#3 \bar #2}
+\DeclareDocumentCommand{\fapp}{ O{f} m O{n} O{,\,} O{(} O{)}}{#1#5#2_1#4\dots #4#2_{#3}#6}
+
+% Column that takes width (left justified): L{1cm}, e.g.
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash$} p{#1} <{$}}
+
+% Column with math mode in displaystyle
+\newcolumntype{F}[1]{>{$\displaystyle} #1 <{$}}
+
+% Column with math mode in displaystyle
+\newcolumntype{D}[1]{>{\displaystyle} #1 <{}}
+
+% Allows to break like in cell; first arg is $t,b,c$, for alignment with other cells
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}l@{}}#2\end{tabular}}
+
+\newcommand{\ccfv}{\textsc{CCFV}}
+
+% \newcommand{\cdclt}{CDCL($\mathcal{T}$)}
+\newcommand{\cdclt}{CDCL(T)}
+\newcommand{\dpllt}{\cdclt}
+
+\newcommand{\cvcho}{\textsc{cvc}4-\textsc{ho}\xspace}
+\newcommand{\cvc}{\textsc{cvc}4\xspace}
+\newcommand{\zzz}{Z3}
+\newcommand{\verit}{\textsc{veriT}\xspace}
+
+\newcommand{\basestrat}[1]{{\bf #1}}
+\newcommand\interleavestrat[2]{\basestrat{#1}+\basestrat{#2}}
+\newcommand\mathinterleavestrat[2]{$\mathbf{#1}$+$\mathbf{#2}$}
+\newcommand\prioritystrat[2]{\basestrat{#1};\basestrat{#2}}
+\newcommand{\zbasestrat}[1]{{\bf z3 #1}}
+\newcommand{\zprioritystrat}[2]{{\bf z3} \basestrat{#1};\basestrat{#2}}
+\newcommand{\E}{\mathsf{E}}
+\newcommand{\Q}{\mathsf{Q}}
+\newcommand{\M}{\mathsf{M}}
+\newcommand{\ite}{\mathsf{ite}}
+\newcommand{\Mod}{\mathcal{M}}
+\newcommand{\termordereq}{\preceq}
+\newcommand{\termorder}{\prec}
+\newcommand{\teq}{\simeq}
+\newcommand{\tneq}{\not\simeq}
+
+\newcommand{\inputform}{\psi}
+\newcommand{\matrixform}{\varphi}
+
+\newcommand\vitem{\vfill\item}
+\newcommand\pvitem{\pause\vfill\item}
+\newcommand\pitem{\pause\item}
+
+\newcommand{\cvcsy}{\textsc{cvc}4\textsc{sy}\xspace}
+\newcommand{\cvccegis}{\textsc{cvc+c}\xspace}
+\newcommand{\cvcu}{\textsc{cvc+upi}\xspace}
+\newcommand{\cvcuci}{\textsc{cvc+upi+e}\xspace}
+\newcommand{\cvcport}{\textsc{cvc-port}\xspace}
+\newcommand{\loopinv}{\textsc{loopinvgen}\xspace}
+
+\newcommand{\divc}{D\&C\xspace}
+
+% AJR : update these
+\newcommand{\unif}{Unif+PI\xspace}
+\newcommand{\unifci}{Unif+PI+E\xspace}
+\newcommand{\smtclass}{\textsc{SMTClassify}\xspace}
+\newcommand{\learn}{\textsc{Learn}\xspace}
+\newcommand{\classchecker}{\textsc{ClassChecker}\xspace}
+
+%%%%%%%%%%%%
+
+
+% To avoid number in slides that break, like the references one
+\setbeamertemplate{frametitle continuation}{}
+
+% Small font
+\renewcommand*{\bibfont}{\scriptsize}
+%%% END Biblatex for references
+
+
+
+%%% BEGIN DEFINING TITLE PAGE
+
+\defbeamertemplate{title page}{mystyle}[1][]
+{
+  \vbox{}
+  \vfill
+  \begingroup
+    \centering
+    {\usebeamercolor[fg]{titlegraphic}\inserttitlegraphic\par}
+    \vskip1em
+    \begin{beamercolorbox}[sep=0pt,center,#1,rounded=true,wd=12cm]{title}
+      \usebeamerfont{title}\inserttitle\par%
+      \ifx\insertsubtitle\@empty%
+      \else%
+        \vskip0.25em%
+        {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}%
+      \fi%
+    \end{beamercolorbox}%
+    \vskip1em\par
+    \begin{beamercolorbox}[sep=8pt,center,#1]{author}
+      \usebeamerfont{author}\insertauthor
+    \end{beamercolorbox}
+    \begin{beamercolorbox}[sep=0pt,center,#1]{date}
+      \usebeamerfont{date}\insertdate
+    \end{beamercolorbox}%
+  \endgroup
+  \vfill
+}
+
+\setbeamertemplate{title page}[mystyle]
+
+%%% END DEFINING TITLE PAGE
+
+%%% BEGIN Meta information
+\author[Tomaz Mascarenhas]
+{%
+  \texorpdfstring{
+\textbf{Tomaz Mascarenhas}\footnotemark[1], Harun Khan\footnote{Equal contribution}, Abdalrhman Mohamed, Andrew Reynolds, Haniel Barbosa, Clark Barrett, Cesare Tinelli
+      \vspace{3ex}
+    \begin{columns}
+      \column{.45\linewidth}
+        \centering
+        \includegraphics[height=0.25\textheight]{images/DCC_LOGO.jpg}
+      \column{.35\linewidth}
+        \includegraphics[height=0.15\textheight]{images/Logo_UFMG.jpg}
+    \end{columns}
+  }
+  {}
+}
+
+\date{Belo Horizonte, Brasil, 11/04/2025}
+
+\title[Formalization of a Proof Calculus for Incremental Linearization for
+  NTA Satisfiability]{Formalization of a Proof Calculus for Incremental Linearization for
+  NTA Satisfiability}
+
+% Redifining footer
+\makeatother
+\setbeamertemplate{footline}
+{
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.6\paperwidth,ht=2.5ex,dp=1ex,left]{title in head/foot}%
+      {\hspace{1em}\usebeamerfont{title in head/foot}\insertshorttitle}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.2\paperwidth,ht=2.5ex,dp=1ex,left]{title in head/foot}%
+      {\hspace{1em}\usebeamerfont{title in head/foot}Tomaz Mascarenhas, UFMG}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.2\paperwidth,ht=2.5ex,dp=1ex,right]{title in head/foot}%
+      \insertframenumber{} / \inserttotalframenumber\hspace{1em}
+    \end{beamercolorbox}}%
+  \vskip0pt%
+}
+\makeatletter
+%%% END Meta information
+
+%%% BEGIN Tikz setup
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,intersections,backgrounds, fadings}
+\usetikzlibrary{shapes}
+
+  \tikzset{
+    invisible/.style={opacity=0},
+    visible on/.style={alt=#1{}{invisible}},
+    alt/.code args={<#1>#2#3}{%
+      \alt<#1>{\pgfkeysalso{#2}}{\pgfkeysalso{#3}} % \pgfkeysalso doesn't change the path
+    },
+  }
+
+\definecolor{BloodRed}{rgb}{.86,0,0}
+\definecolor{gold(metallic)}{rgb}{0.83, 0.69, 0.22}
+
+\definecolor{procColor}{rgb}{0.628,0.35,0.17}
+\definecolor{cnfColor}{rgb}{0.82, 0.0, 0.86}
+% \definecolor{cnfColor}{rgb}{.83,.66,0}
+\definecolor{satColor}{rgb}{.83,0,0}
+\definecolor{thSolverColor}{rgb}{0,.5,0}
+\definecolor{thRwColor}{rgb}{0,0,1}
+\definecolor{thCombColor}{rgb}{0.5,0.5,0}
+
+% spec
+\definecolor{spec}{rgb}{0.0, 0.0, 0.86}
+% syntax recstrictions
+\definecolor{grammar}{rgb}{0.82, 0.0, 0.86}
+
+\tikzfading[
+  name=arrowfading,
+  top color=transparent!0,
+  bottom color=transparent!95
+]
+\newcommand*{\tikzarrow}[2]{%
+  \tikz[
+    baseline=(A.base),             % Set baseline to the baseline of node content
+    font=\footnotesize\sffamily    % Set fontsize of the node content
+  ]
+  \node[
+    single arrow,                  % Shape of the node
+    single arrow head extend=4pt,  % Actual width of arrow head
+    single arrow tip angle=150,    % Adjust arrow tip angle
+    shape border rotate=270,       % Rotate the arrow shape to point down
+    draw=red!25,                   % Draw the node shape (with certain border color
+    inner sep=2pt,                 % Separation between node content and node shape
+    top color=white,               % Shading color on top of node
+    bottom color=#1,               % Shading color on bottom of node
+    general shadow={               % Specifications for the shadow
+      fill=black,
+      shadow yshift=-0.5ex,
+      path fading=arrowfading
+    }
+  ] (A) {#2};%
+}
+
+%%% END Tikz setup
+
+\newcommand{\qgo}[1]{\innerqgo(#1)}
+    \def\innerqgo(#1,#2,#3){#1 #2_1\dots #2_n.~{#3}}
+\def\qg#1{\innerqg(#1)}
+    \def\innerqg(#1,#2,#3){#1\mathbf{#2}.~{#3}}
+\DeclareDocumentCommand{\qgb}{ m O{} }{\innerqgb(#1,#2)}
+\def\innerqgb(#1,#2,#3,#4){#1\bar #2_{#4}.~{#3}}
+\DeclareDocumentCommand{\fapp}{ O{f} m O{n} O{,} O{(} O{)}}{#1#5#2_1#4\dots #4#2_{#3}#6}
+\DeclareDocumentCommand{\fappint}{ O{f} m O{n} O{,}}{\innerfappint(#1,#2,#3,#4)}
+  \def\innerfappint(#1,#2,#3,#4,#5,#6){#1(#3#2_1#4#6\dots #6#3#2_{#5}#4)}
+\DeclareDocumentCommand{\bfapp}{ O{f} m O{}}{#1(\bar {#2}_{#3})}
+
+\DeclareDocumentCommand{\enum}{ O{n} m O{,} O{} O{1}}{#2_#5#4#3\dots #3#2_{#1}#4}
+\DeclareDocumentCommand{\benum}{ O{n} m O{\mapsto} O{} O{,\,} O{1}}{\innerbenum(#2,#3,#6,#4)#5\dots #5\innerbenum(#2,#3,#1,#4)}
+  \def\innerbenum(#1,#2,#3,#4,#5){#1_{#4}#5#3 {#2_{#4}}#5}
+
+\usepackage{soul,xcolor}
+
+\setstcolor{red}
+\makeatletter
+\newcommand\SoulColor{%
+  \let\set@color\beamerorig@set@color
+  \let\reset@color\beamerorig@reset@color}
+\makeatother
+
+\DeclareDocumentCommand{\soutthick}{ O{.4pt} m }{%
+    \renewcommand{\ULthickness}{#1}%
+       \sout{#2}%
+    \renewcommand{\ULthickness}{.4pt}% Resetting to ulem default
+}
+
+\definecolor{ao}{rgb}{0.0, 0.0, 1.0}
+\definecolor{ao(english)}{rgb}{0.0, 0.5, 0.0}
+\definecolor{asparagus}{rgb}{0.53, 0.66, 0.42}
+\definecolor{bostonuniversityred}{rgb}{0.8, 0.0, 0.0}
+\definecolor{darkbrown}{rgb}{0.4, 0.26, 0.13}
+\definecolor{alizarin}{rgb}{0.82, 0.1, 0.26}
+% 2952bfff
+\definecolor{ceruleanblue}{rgb}{0.16, 0.32, 0.75}
+% 8c008cff
+\definecolor{darkmagenta}{rgb}{0.55, 0.0, 0.55}
+% #8FBC8F
+\definecolor{darkseagreen}{rgb}{0.56, 0.74, 0.56}
+
+\usepackage{tikz-qtree}
+
+%%%%%%%%%%%%%%%% BEGIN define outline machinery
+
+\newcommand{\beamersec}[2]{%
+  \section*{#1}
+  \addcontentsline{toc}{section}{$\bullet$ #1 \vspace{10pt}\newline  \includegraphics[height=.3\textheight]{#2}\vfill}
+
+  \begin{frame}
+    \vfill
+    \begin{center}
+      \vfill\textbf{#1}\vfill
+      \includegraphics[height=.5\textheight]{#2}
+      \vfill
+    \end{center}
+    \vfill
+  \end{frame}
+}
+
+\newcommand{\beamersubsec}[1]{%
+  \subsection*{#1}
+  \addcontentsline{toc}{section}{$\mbox{}\quad-$ #1 \vspace{10pt}\newline\vfill}
+
+  \begin{frame}
+    \vfill
+    \begin{center}
+      \textbf{#1}
+    \end{center}
+    \vfill
+  \end{frame}
+}
+
+\newcommand{\beamersubsubsec}[1]{%
+  \subsection*{#1}
+  \addcontentsline{toc}{section}{$\mbox{}\qquad\cdot$ #1 \vspace{10pt}\newline\vfill}
+}
+
+%%%%%%%%%%%%%%%% END define outline machinery
+
+%%% BEGIN trick for not counting references
+
+\newcommand{\backupbegin}{
+   \newcounter{framenumberappendix}
+   \setcounter{framenumberappendix}{\value{framenumber}}
+}
+\newcommand{\backupend}{
+   \addtocounter{framenumberappendix}{-\value{framenumber}}
+   \addtocounter{framenumber}{\value{framenumberappendix}}
+}
+
+%%% END trick for not counting references
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+
+% Creating boxes with width of given text; first parameter (optional) is
+% alignment of box, then text to be taken the width, then the text to be boxed
+\newlength\stextwidth
+\newcommand\makesamewidth[3][c]{%
+  \settowidth{\stextwidth}{#2}%
+  \makebox[\stextwidth][#1]{#3}%
+}
+
+% color highlight
+% f0dc9cff
+
+\AtBeginSection[]{
+  {
+    \setbeamertemplate{footline}{}
+  \begin{frame}
+  \vfill
+  \centering
+  \begin{beamercolorbox}[sep=8pt,center,shadow=true,rounded=true]{title}
+    \usebeamerfont{title}\insertsectionhead\par%
+  \end{beamercolorbox}
+  \vfill
+\end{frame}
+}
+\addtocounter{framenumber}{-1}
+}
+
+% Theorem settings
+\addtobeamertemplate{theorem begin}{%
+  \setbeamercolor{block title}{fg=white,bg=black}%
+  \setbeamercolor{block body}{fg=black, bg=white!90!black}%
+}{}
+
+%%% BEGIN CHANGING BULLETS STYLE
+
+\setbeamertemplate{itemize item}{$\vartriangleright$}
+\setbeamertemplate{itemize subitem}{$\blacktriangleright$}
+\newlength\origleftmargini
+\setlength\origleftmargini\leftmargini
+\newlength\origleftmarginii
+\setlength\origleftmarginii\leftmarginii
+\setlength\leftmargini{1em}
+\setlength\leftmarginii{1.25em}
+\setlength\leftmarginiii{1em}
+
+%%% END CHANGING BULLETS STYLE
+
+\setbeamersize{text margin left=1em, text margin right=1.5em}
+
+\newcommand{\yell}[1]{{\textcolor{red}{[#1]}}}
+
+\newcommand{\cvcc}{\textsc{cvc}{\small 4}\textsc{sy}\textsc{+b}\xspace}
+\newcommand{\cvca}{\textsc{cvc}{\small 4}\textsc{sy}\textsc{+u}\xspace}
+\newcommand{\gpid}{\textsc{GPiD}\xspace}
+\newcommand{\explain}{\textsc{Explain}\xspace}
+
+\newcommand{\mysetminusD}{\hbox{\tikz{\draw[line width=0.6pt,line cap=round] (3pt,0) -- (0,6pt);}}}
+\newcommand{\mysetminusT}{\mysetminusD}
+\newcommand{\mysetminusS}{\hbox{\tikz{\draw[line width=0.45pt,line cap=round] (2pt,0) -- (0,4pt);}}}
+\newcommand{\mysetminusSS}{\hbox{\tikz{\draw[line width=0.4pt,line cap=round] (1.5pt,0) -- (0,3pt);}}}
+
+\newcommand{\mysetminus}{\mathbin{\mathchoice{\mysetminusD}{\mysetminusT}{\mysetminusS}{\mysetminusSS}}}
+
+\def\vv{\smallskip}
+
+\newcommand{\sep}{~\mid~}
+
+\makeatletter
+\newcommand\notsotiny{\@setfontsize\notsotiny{7}{8}}
+\makeatother
+
+\newcommand\chighlight[2]{\setlength{\fboxsep}{0pt}\colorbox{#1}{#2\strut}}
+
+\begin{document}
+
+{
+\setbeamertemplate{footline}{}
+\frame{\titlepage}
+}
+\addtocounter{framenumber}{-1}
+
+\begin{frame}
+  \frametitle{Aritmética Não-linear e Funções Transcendentais}
+  \begin{itemize}
+    \item A teoria NTA em SMT compreende aritmética não-linear e algumas funções transcendentais
+          \begin{itemize}
+                  \item Funções trigonométricas, $\exp$ e $\log$.
+          \end{itemize}
+    \vitem Aplicações em: verificação formal de sistemas dinâmicos, processamento de sinais digitais e planejamento de movimentação para robôs.
+          \begin{itemize}
+                  \item Automatização em assistentes de demonstração, se for provido o ferramental necessário
+          \end{itemize}
+    \vitem Complexidade $\mathcal{O}(2^{2^{n}})$ para aritmética não-linear em $\mathbb{R}$ e indecidível para NTA.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Incremental Linearization}
+  \begin{itemize}
+    \item \textit{Incremental linearization} é um método para decidir a satisfatibilidade de fórmulas em NTA.
+          \begin{itemize}
+                  \item Não é um procedimento de decisão
+          \end{itemize}
+    \vitem Dada uma fórmula $\psi$ em NTA, abstraem-se todas as multiplicações e funções transcendentais usando funções não-interpretadas,
+    obtendo-se uma fórmula $\psi'$ em UFLRA.
+    \vitem Se $\psi'$ não é satisfatível, então $\psi$ também não é.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Incremental Linearization}
+  \begin{itemize}
+    \item Se $\psi'$ é satisfatível, não necessariamente $\psi$ também é. Nesse caso, o método introduz incrementalmente novos lemas a $\psi'$ bloqueando soluções espúrias.
+    \vfill
+\begin{tcolorbox}[colback=green!5,colframe=green!40!black,title=Exemplo]
+  Seja $\psi = x^{2} + y^{2} \le 2 \wedge (x \le -1.1 \lor x \ge 1.1) \wedge (y \le -1.1 \lor y \ge 1.1)$.\\
+  $\psi'$ seria o mesmo, mas em vez de $x^{2}$ e $y^{2}$ teríamos $f_{*}(x, x)$ e $f_{*}(y, y)$.\\
+  É possível interpretar $f_{*}$ tal que $\psi'$ seja satisfeita, mas a fórmula original não é satisfatível.
+\end{tcolorbox}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Incremental Linearization}
+  \begin{itemize}
+  \item Soluções espúrias envolvendo multiplicações de variáveis são bloqueadas usando a \textit{equação do plano tangente} e o sinal das variáveis.
+  \vitem Soluções espúrias envolvendo funções transcendentais são bloqueadas usando o \textit{polinômio de Taylor}.
+          \begin{itemize}
+                  \item É a ferramenta perfeita para aproximar incrementalmente uma função derivável
+          \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Incremental Linearization}
+  \begin{algorithmic}[1]
+    \Function{IncrementalLinearization}{$\psi$}
+      \State $\psi' \gets$ \Call{InitialAbstraction}{$\psi$}
+      \State $\Gamma \gets \varnothing$
+      \While{\Call{InTimeLimit}{\null}}
+        \State $\langle sat, \mu \rangle \gets $\Call{SolveUFLRA}{$\psi' \wedge \Gamma$}
+        \If{\textbf{not} $sat$}
+          \Return UNSAT
+        \EndIf
+        \State $\langle sat', \Gamma' \rangle \gets $\Call{CheckRefine}{$\psi', \mu$}
+        \If{$sat'$}
+          \Return SAT
+        \EndIf
+        \State $\Gamma \gets \Gamma \cup \Gamma'$
+      \EndWhile
+    \EndFunction
+  \end{algorithmic}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Proof Calculus}
+  \begin{itemize}
+    \item cvc5 implementa uma versão modificada desse algoritmo, apropriada para suas otimizações internas.
+    \vitem O solucionador define um \textit{proof calculus} composto por 21 lemas que capturam raciocínio por trás do algoritmo, possibilitando a produção de demonstrações.
+    \vitem Esses lemas são, em sua grande maioria, as regras usadas para eliminar soluções espúrias.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Contribuições}
+  \begin{itemize}
+    \item Neste trabalho nós mecanizamos demonstrações de todas os lemas presentes no proof calculus, fortalecendo a confiança no algoritmo
+    \vitem Nesse processo, identificamos algumas hipóteses faltando na documentação de algumas regras, além de outras imprecisões.
+    \vitem Além disso, é um primeiro passo em direção a reconstrução de demonstrações em Lean.
+
+  \end{itemize}
+\end{frame}
+
+\section{Lemas Formalizados}
+
+
+\begin{frame}
+  \frametitle{Lemas para multiplicação - ARITH\_MULT\_TANGENT}
+
+\begin{center}
+  $\infer[]{xy \le bx + ay - ab \leftrightarrow ((x \le a \land y \ge b) \lor (x \ge a \land y \le b))}{- \mid x, y, a, b}$
+\end{center}
+
+\begin{center}
+  $\infer[]{xy \ge bx + ay - ab \leftrightarrow ((x \le a \land y \le b) \lor (x \ge a \land y \ge b))}{- \mid x, y, a, b}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Lemas para multiplicação - ARITH\_MULT\_TANGENT}
+
+  \begin{lstlisting}
+  theorem arithMulTangentLower {α : Type} [LinearOrderedField α] (x y a b : α) :
+      x * y ≤ b * x + a * y - a * b ↔ ((x ≤ a ∧ y ≥ b) ∨ (x ≥ a ∧ y ≤ b))
+  \end{lstlisting}
+
+  \begin{lstlisting}
+  theorem arithMulTangentUpper {α : Type} [LinearOrderedField α] (x y a b : α) :
+      x * y ≥ b * x + a * y - a * b ↔ ((x ≤ a ∧ y ≤ b) ∨ (x ≥ a ∧ y ≥ b))
+  \end{lstlisting}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lemas para multiplicação - ARITH\_MULT\_SIGN}
+
+\begin{center}
+  $\infer[]{(f_{1} \land \cdots \land f_{k}) \rightarrow m \bowtie 0}{- \mid f_{1}, \cdots, f_{k}, m}$
+\end{center}
+Cada $f_{i}$ é da forma $x_{i} \bowtie 0$. $m$ é um monômio composto por potências dos $x_{i}$'s. A conclusão é definida com base na paridade dos expoentes e no sinal de cada $x_{i}$.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Lemas para multiplicação - ARITH\_MULT\_SIGN}
+
+  \begin{lstlisting}
+    theorem powNegOdd      : ∀ {k : ℕ} {r : ℝ}, r < 0 → Odd k  → r ^ k < 0
+    theorem powNegEven     : ∀ {k : ℕ} {r : ℝ}, r < 0 → Even k → r ^ k > 0
+    theorem nonZeroEvenPow : ∀ {k : ℕ} {r : ℝ}, r ≠ 0 → Even k → r ^ k > 0
+    theorem powPos         : ∀ {k : ℕ} {r : ℝ}, r > 0           → r ^ k > 0
+  \end{lstlisting}
+
+  \begin{lstlisting}
+    theorem combineSigns₁ : ∀ {a b : ℝ}, a > 0 → b > 0 → b * a > 0
+    theorem combineSigns₂ : ∀ {a b : ℝ}, a > 0 → b < 0 → b * a < 0
+    theorem combineSigns₃ : ∀ {a b : ℝ}, a < 0 → b > 0 → b * a < 0
+    theorem combineSigns₄ : ∀ {a b : ℝ}, a < 0 → b < 0 → b * a > 0
+  \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Lemas para funções transcendentais - Limitando $\exp$ e $\sin$}
+\begin{center}
+$\infer[]{t \geq c \rightarrow \exp(t) \geq \texttt{maclaurin}(\exp, d, c)}{- \mid d,c,t}$
+\end{center}
+
+Onde $d$ é um número ímpar.
+
+\begin{center}
+  $\infer[]{(t \geq l \wedge t \le u) \rightarrow
+  \sin(t) \geq \texttt{secant}(\sin, l, u, t)}{- \mid d,t,l,u}$
+\end{center}
+
+Onde $d$ é congruente a $3$ módulo $4^{*}$, $\sin$ é côncavo no intervalo $[l, u]^{*}$ e \texttt{secant} é a reta secante ao $d$-ésimo polinômio de taylor nos pontos $(l, p(l))$ e $(r, p(r))$.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Termo complementar de Lagrange}
+  \begin{itemize}
+    \item Esses resultados seguem do \textit{Teorema de Taylor com termo complementar de Lagrange}:
+
+    \vfill
+    \begin{center}
+      $f(x) - \left( \mathlarger{\sum_{j=0}^{n}}\dfrac{f^{(j)}(x_0)}{j!}(x - x_0)^j \right) = \dfrac{f^{(n+1)}(x')}{(n+1)!}(x - x_0)^{n+1}$
+    \end{center}
+    \vitem Não seria possível formalizar esses resultados sem a Mathlib. O resultado acima existe nela, mas assumindo que $x_{0} < x$. Nós estendemos a biblioteca com a versão geral do teorema.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Lemas para funções transcendentais - Limitando $\exp$ e $\sin$}
+\begin{lstlisting}
+theorem arithTransExpApproxBelow (d n : ℕ) (_ : d = 2*n + 1) :
+  Real.exp x ≥ taylorWithinEval Real.exp d Set.univ 0 x
+
+
+
+theorem arithTransSineApproxBelowPos (d k : ℕ) (hd : d = 4 * k + 3) (t l u : ℝ) (ht : l ≤ t ∧ t ≤ u)
+    (hl : 0 < l) (hu : u ≤ Real.pi) :
+    let p : ℝ → ℝ := taylorWithinEval Real.sin d Set.univ 0
+    sin t ≥ ((p l - p u) / (l - u)) * (t - l) + p l
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Outras funções transcendentais}
+  \begin{itemize}
+    \item $\cos(x) = \sin(x + \frac{\pi}{2})$
+    \vitem $\tan(x) = \frac{\sin(x)}{\cos(x)}$
+    \vitem $\sec(x) = \frac{1}{\cos(x)}$
+    \vitem $\csc(x) = \frac{1}{\sin(x)}$
+    \vitem $\cot(x) = \frac{1}{\tan(x)}$
+    \vitem $\log$ e trigonométricas inversas são modeladas usando novas variáveis e asserções. Por exemplo, para um termo com a forma $\log(1 + x)$ introduzimos uma variável $y$ e adicionamos a asserção $\exp(y) = 1 + x$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Trabalhos futuros}
+  \begin{itemize}
+    \item Correções no cvc5
+    \vitem Reconstrução de demonstrações usando \textit{lean-smt}
+    \vitem Desafios com números reais
+  \end{itemize}
+\end{frame}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
