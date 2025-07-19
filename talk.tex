@@ -12,6 +12,7 @@
 \usepackage{booktabs}
 \usepackage{stmaryrd}
 \usepackage{subcaption}
+\usepackage{caption}
 \usepackage{bussproofs}
 \usepackage{mathpartir}
 \usepackage{minted}
@@ -266,7 +267,7 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
   {}
 }
 
-\date{Belo Horizonte, Brasil, 11/04/2025}
+\date{02/08/2025}
 
 \title[Formalization of a Proof Calculus for Incremental Linearization for
   NTA Satisfiability]{Formalization of a Proof Calculus for Incremental Linearization for
@@ -528,42 +529,43 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
 \addtocounter{framenumber}{-1}
 
 \begin{frame}
-  \frametitle{Aritmética Não-linear e Funções Transcendentais}
+  \frametitle{Nonlinear Arithmetic and Transcendental Functions}
   \begin{itemize}
-    \item A teoria NTA em SMT compreende aritmética não-linear e algumas funções transcendentais
+    \item The NTA theory in SMT comprises nonlinear arithmetic and some transcendental functions
           \begin{itemize}
-                  \item Funções trigonométricas, $\exp$ e $\log$.
+                  \item Trigonometric functions, $\exp$ and $\log$.
           \end{itemize}
-    \vitem Aplicações em: verificação formal de sistemas dinâmicos, processamento de sinais digitais e planejamento de movimentação para robôs.
+    \vitem Applications in formal verification of dynamic systems, digital signal processing and motion planning for robots.
           \begin{itemize}
-                  \item Automatização em assistentes de demonstração, se for provido o ferramental necessário
+                  \item Automation in proof assistants, if provided the necessary tooling.
           \end{itemize}
-    \vitem Complexidade $\mathcal{O}(2^{2^{n}})$ para aritmética não-linear em $\mathbb{R}$ e indecidível para NTA.
+     \vitem Currently, no solver with complexity better than doubly-exponential for NRA, and NTA has been shown
+          to be undecidable.
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Incremental Linearization}
   \begin{itemize}
-    \item \textit{Incremental linearization} é um método para decidir a satisfatibilidade de fórmulas em NTA.
+    \item \textit{Incremental linearization} is a method introduced by Cimatti et al.\ for deciding the satisfiability of formulas in NTA.
           \begin{itemize}
-                  \item Não é um procedimento de decisão
+                  \item Not a decision procedure
           \end{itemize}
-    \vitem Dada uma fórmula $\psi$ em NTA, abstraem-se todas as multiplicações e funções transcendentais usando funções não-interpretadas,
-    obtendo-se uma fórmula $\psi'$ em UFLRA.
-    \vitem Se $\psi'$ não é satisfatível, então $\psi$ também não é.
+    \vitem Given a formula $\psi$ in NTA, a new formula $\psi'$ is obtained by abstracting each transcendental function and variable multiplication as an uninterpreted function.
+    \vitem $\psi'$ is thus a formula in UFLRA. If $\psi'$ is unsatisfiable, then so is $\psi$.
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Incremental Linearization}
   \begin{itemize}
-    \item Se $\psi'$ é satisfatível, não necessariamente $\psi$ também é. Nesse caso, o método introduz incrementalmente novos lemas a $\psi'$ bloqueando soluções espúrias.
+    \item If $\psi'$ is satisfiable, not necessarily $\psi$ is. In this cast, the method incrementally introduces
+          new lemmas blocking spurious solutions.
     \vfill
-\begin{tcolorbox}[colback=green!5,colframe=green!40!black,title=Exemplo]
-  Seja $\psi = x^{2} + y^{2} \le 2 \wedge (x \le -1.1 \lor x \ge 1.1) \wedge (y \le -1.1 \lor y \ge 1.1)$.\\
-  $\psi'$ seria o mesmo, mas em vez de $x^{2}$ e $y^{2}$ teríamos $f_{*}(x, x)$ e $f_{*}(y, y)$.\\
-  É possível interpretar $f_{*}$ tal que $\psi'$ seja satisfeita, mas a fórmula original não é satisfatível.
+\begin{tcolorbox}[colback=green!5,colframe=green!40!black,title=Example]
+  Let $\psi = x^{2} + y^{2} \le 2 \wedge (x \le -1.1 \lor x \ge 1.1) \wedge (y \le -1.1 \lor y \ge 1.1)$.
+  $\psi'$ is the same, but instead of $x^{2}$ and $y^{2}$ we have $f_{*}(x, x)$ e $f_{*}(y, y)$.
+  It is possible to interpret $f_*$ in such a way that $\psi'$ is satisfied, but the original formula is unsatisfiable.
 \end{tcolorbox}
   \end{itemize}
 \end{frame}
@@ -571,15 +573,16 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
 \begin{frame}
   \frametitle{Incremental Linearization}
   \begin{itemize}
-  \item Soluções espúrias envolvendo multiplicações de variáveis são bloqueadas usando a \textit{equação do plano tangente} e o sinal das variáveis.
+    \item Spurious solutions involving variable multiplication are blocked through the \textit{tangent plane} equation
+          and some sign properties.
 
-  \vitem Soluções espúrias envolvendo funções transcendentais são bloqueadas usando o \textit{polinômio de Taylor}.
-          \begin{itemize}
-                  \item É a ferramenta perfeita para aproximar incrementalmente uma função derivável
-          \end{itemize}
+    \vitem Spurious solutions involving transcendental functions are blocked using their \textit{Taylor polynomial}.
 
+  \begin{figure}
   \centering
   \includegraphics[scale=0.1]{images/tanPlane.png}
+  \caption*{Source: Cimatti et al.}
+  \end{figure}
   \end{itemize}
 \end{frame}
 
@@ -607,27 +610,41 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
 \begin{frame}
   \frametitle{Proof Calculus}
   \begin{itemize}
-    \item cvc5 implementa uma versão modificada desse algoritmo, apropriada para suas otimizações internas.
-    \vitem O solucionador define um \textit{proof calculus} composto por 21 lemas que capturam raciocínio por trás do algoritmo, possibilitando a produção de demonstrações.
-    \vitem Esses lemas são, em sua grande maioria, as regras usadas para eliminar soluções espúrias.
+    \item cvc5 implements a slightly modified version of this algorithm.
+    \vitem The solver also defines a \textit{proof calculus} composed of 21 lemmas capturing its reasoning.
+    \vitem These lemmas are, for the most part, the rules that eliminate spurious solutions.
   \end{itemize}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Contribuições}
+  \frametitle{Other transcendental functions}
   \begin{itemize}
-    \item Neste trabalho nós mecanizamos demonstrações de todas os lemas presentes no proof calculus, fortalecendo a confiança no algoritmo
-    \vitem Nesse processo, identificamos algumas hipóteses faltando na documentação de algumas regras, além de outras imprecisões.
-    \vitem Além disso, é um primeiro passo em direção a reconstrução de demonstrações em Lean.
+    \item $\sin$ and $\exp$ are the only ones directly handled.
+    \vitem $\cos(x) = \sin(x + \frac{\pi}{2})$
+    \vitem $\tan(x) = \frac{\sin(x)}{\cos(x)}$
+    \vitem $\sec(x) = \frac{1}{\cos(x)}$
+    \vitem $\log$ and inverse trigonometric functions are modeled with new variables. For instance, if the input formula has the term $\log(1 + x)$ we introduce a new variable $y$ and add the assertion $\exp(y) = 1 + x$.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Contributions}
+  \begin{itemize}
+    \item In this work we mechanize proofs of all the lemmas in the proof calculus using the Lean proof assistant.
+          \begin{itemize}
+                  \item \textit{lean-smt}
+          \end{itemize}
+    \vitem In this process, we identified missing hypothesis in its documentation, as well as some other inaccuracies.
+    \vitem This is the first step towards reconstructing proofs of this algorithm in Lean.
 
   \end{itemize}
 \end{frame}
 
-\section{Lemas Formalizados}
+\section{Formalization of the Proof Calculus}
 
 
 \begin{frame}
-  \frametitle{Lemas para multiplicação - ARITH\_MULT\_TANGENT}
+  \frametitle{Lemmas on multiplication - ARITH\_MULT\_TANGENT}
 
 \begin{center}
   $\infer[]{xy \le bx + ay - ab \leftrightarrow ((x \le a \land y \ge b) \lor (x \ge a \land y \le b))}{- \mid x, y, a, b}$
@@ -640,7 +657,7 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Lemas para multiplicação - ARITH\_MULT\_TANGENT}
+  \frametitle{Lemmas on multiplication - ARITH\_MULT\_TANGENT}
 
   \begin{lstlisting}
   theorem arithMulTangentLower {α : Type} [LinearOrderedField α] (x y a b : α) :
@@ -655,16 +672,19 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
 \end{frame}
 
 \begin{frame}
-  \frametitle{Lemas para multiplicação - ARITH\_MULT\_SIGN}
+  \frametitle{Lemmas on multiplication - ARITH\_MULT\_SIGN}
 
 \begin{center}
-  $\infer[]{(f_{1} \land \cdots \land f_{k}) \rightarrow m \bowtie 0}{- \mid f_{1}, \cdots, f_{k}, m}$
+  $\infer[]{m \bowtie 0}{f_{1}, \cdots, f_{k} \mid m}$
 \end{center}
-Cada $f_{i}$ é da forma $x_{i} \bowtie 0$. $m$ é um monômio composto por potências dos $x_{i}$'s. A conclusão é definida com base na paridade dos expoentes e no sinal de cada $x_{i}$.
+Each $f_i$ has the form $x_j \bowtie 0$. $m$ is a monomial composed by powers of the $x_i$'s. The relation in
+the conclusion is defined based on the parity of the exponents and on the sign of each $x_i$.
+
+% Cada $f_{i}$ é da forma $x_{i} \bowtie 0$. $m$ é um monômio composto por potências dos $x_{i}$'s. A conclusão é definida com base na paridade dos expoentes e no sinal de cada $x_{i}$.
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Lemas para multiplicação - ARITH\_MULT\_SIGN}
+  \frametitle{Lemmas on multiplication - ARITH\_MULT\_SIGN}
 
   \begin{lstlisting}
     theorem powNegOdd      : ∀ {k : ℕ} {r : ℝ}, r < 0 → Odd k  → r ^ k < 0
@@ -682,37 +702,39 @@ Cada $f_{i}$ é da forma $x_{i} \bowtie 0$. $m$ é um monômio composto por pot�
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Lemas para funções transcendentais - Limitando $\exp$ e $\sin$}
+  \frametitle{Lemmas for transcendental functions - Bounding $\exp$ e $\sin$}
 \begin{center}
 $\infer[]{t \geq c \rightarrow \exp(t) \geq \texttt{maclaurin}(\exp, d, c)}{- \mid d,c,t}$
 \end{center}
 
-Onde $d$ é um número ímpar.
+Where $d$ is an odd number.
 
 \begin{center}
-  $\infer[]{(t \geq l \wedge t \le u) \rightarrow
+  $\infer[]{t \in [l, u] \rightarrow
   \sin(t) \geq \texttt{secant}(\sin, l, u, t)}{- \mid d,t,l,u}$
 \end{center}
 
-Onde $d$ é congruente a $3$ módulo $4^{*}$, $\sin$ é côncavo no intervalo $[l, u]^{*}$ e \texttt{secant} é a reta secante ao $d$-ésimo polinômio de taylor nos pontos $(l, p(l))$ e $(r, p(r))$.
+Where $d$ is congruent to $3$ modulo $4^*$, $\sin$ is concave in the interval $[l, u]^*$ and \texttt{secant}
+is the secant line to the $d$-th Taylor polynomial at the points $(l, p(l))$ and $(r, p(r))$.
 
 \end{frame}
 
 \begin{frame}
-  \frametitle{Termo complementar de Lagrange}
+  \frametitle{Taylor's theorem and Lagrange's remainder}
   \begin{itemize}
-    \item Esses resultados seguem do \textit{Teorema de Taylor com termo complementar de Lagrange}:
+    \item These results follow from \textit{Taylor's theorem} with the Lagrange form of the remainder:
 
     \vfill
     \begin{center}
       $f(x) - \left( \mathlarger{\sum_{j=0}^{n}}\dfrac{f^{(j)}(x_0)}{j!}(x - x_0)^j \right) = \dfrac{f^{(n+1)}(x')}{(n+1)!}(x - x_0)^{n+1}$
     \end{center}
-    \vitem Não seria possível formalizar esses resultados sem a Mathlib. O resultado acima existe nela, mas assumindo que $x_{0} < x$. Nós estendemos a biblioteca com a versão geral do teorema.
+          \vitem This formula already existed in mathlib,
+          but with the additional hypothesis that $x_0 < x$. We extended it to the general version.
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Lemas para funções transcendentais - Limitando $\exp$ e $\sin$}
+  \frametitle{Lemmas for transcendental functions - Bounding $\exp$ e $\sin$}
 \begin{lstlisting}
 theorem arithTransExpApproxBelow (d n : ℕ) (_ : d = 2*n + 1) :
   Real.exp x ≥ taylorWithinEval Real.exp d Set.univ 0 x
@@ -727,23 +749,10 @@ theorem arithTransSineApproxBelowPos (d k : ℕ) (hd : d = 4 * k + 3) (t l u : �
 \end{frame}
 
 \begin{frame}
-  \frametitle{Outras funções transcendentais}
+  \frametitle{Future Work}
   \begin{itemize}
-    \item $\cos(x) = \sin(x + \frac{\pi}{2})$
-    \vitem $\tan(x) = \frac{\sin(x)}{\cos(x)}$
-    \vitem $\sec(x) = \frac{1}{\cos(x)}$
-    \vitem $\csc(x) = \frac{1}{\sin(x)}$
-    \vitem $\cot(x) = \frac{1}{\tan(x)}$
-    \vitem $\log$ e trigonométricas inversas são modeladas usando novas variáveis e asserções. Por exemplo, para um termo com a forma $\log(1 + x)$ introduzimos uma variável $y$ e adicionamos a asserção $\exp(y) = 1 + x$.
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Trabalhos futuros}
-  \begin{itemize}
-    \item Correções no cvc5
-    \vitem Reconstrução de demonstrações usando \textit{lean-smt}
-    \vitem Desafios com números reais
+    \item Proof reconstruction using \textit{lean-smt}
+    \vitem Challenges with real numbers
   \end{itemize}
 \end{frame}
 
