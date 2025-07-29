@@ -1,3 +1,11 @@
+% TODO: See if we should add something for proof reconstruction (Abdal's slides?)
+%   No, but talk a bit about it in future work
+%   How does the workflow work for just checking? How the statement is translated to Lean?
+%   Maybe it is not translated directly, just the proof is checked but without checking whether we're proving the right thing?
+%   the answer is here: https://github.com/abdoo8080/lean-cpc-checker/blob/c513efca48c82ec8ab3587adf5f762be28286b9a/Checker.lean
+% Check a bit Harun's section of the ITP paper to say some words about the proofs
+% of stuff about Taylor polynomials
+
 \documentclass[usepdftitle=false,aspectratio=169,usenames,dvipsnames]{beamer}
 \usepackage{amsmath, amsfonts, amssymb}
 \usepackage{algorithm}
@@ -256,18 +264,18 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
   \texorpdfstring{
 \textbf{Tomaz Mascarenhas}\footnotemark[1], Harun Khan\footnote{Equal contribution}, Abdalrhman Mohamed, Andrew Reynolds, Haniel Barbosa, Clark Barrett, Cesare Tinelli
       \vspace{3ex}
-    \begin{columns}
-      \column{.45\linewidth}
-        \centering
-        \includegraphics[height=0.25\textheight]{images/DCC_LOGO.jpg}
-      \column{.35\linewidth}
-        \includegraphics[height=0.15\textheight]{images/Logo_UFMG.jpg}
-    \end{columns}
+    % \begin{columns}
+    %   \column{.45\linewidth}
+    %     \centering
+    %     \includegraphics[height=0.25\textheight]{images/DCC_LOGO.jpg}
+    %   \column{.35\linewidth}
+    %     \includegraphics[height=0.15\textheight]{images/Logo_UFMG.jpg}
+    % \end{columns}
   }
   {}
 }
 
-\date{02/08/2025}
+\date{SC$^2$, Stuttgart, 02/08/2025}
 
 \title[Formalization of a Proof Calculus for Incremental Linearization for
   NTA Satisfiability]{Formalization of a Proof Calculus for Incremental Linearization for
@@ -533,26 +541,30 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
   \begin{itemize}
     \item The NTA theory in SMT comprises nonlinear arithmetic and some transcendental functions
           \begin{itemize}
-                  \item Trigonometric functions, $\exp$ and $\log$.
+                  \item Trigonometric functions, $\exp$ and $\log$
           \end{itemize}
-    \vitem Applications in formal verification of dynamic systems, digital signal processing and motion planning for robots.
+    \pause
+    \vitem Applications in formal verification of dynamic systems, digital signal processing and motion planning for robots
           \begin{itemize}
-                  \item Automation in proof assistants, if provided the necessary tooling.
+                  \item Automation in proof assistants, if provided the necessary tooling
           \end{itemize}
-     \vitem Currently, no solver with complexity better than doubly-exponential for NRA, and NTA has been shown
-          to be undecidable.
+    \pause
+          \vitem Currently, no solver with complexity better than doubly-exponential for QF\_NRA, and QF\_NTA has been shown to be
+          to be undecidable
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Incremental Linearization}
   \begin{itemize}
-    \item \textit{Incremental linearization} is a method introduced by Cimatti et al.\ for deciding the satisfiability of formulas in NTA.
+    \item \textit{Incremental linearization} is a method introduced by Cimatti et al.\ for deciding the satisfiability of formulas in QF\_NTA
           \begin{itemize}
                   \item Not a decision procedure
           \end{itemize}
-    \vitem Given a formula $\psi$ in NTA, a new formula $\psi'$ is obtained by abstracting each transcendental function and variable multiplication as an uninterpreted function.
-    \vitem $\psi'$ is thus a formula in UFLRA. If $\psi'$ is unsatisfiable, then so is $\psi$.
+    \pause
+    \vitem Given a formula $\psi$ in QF\_NTA, a new formula $\psi'$ is obtained by abstracting each transcendental function and variable multiplication as an uninterpreted function
+    \pause
+    \vitem $\psi'$ is thus a formula in QF\_UFLRA. If $\psi'$ is unsatisfiable, then so is $\psi$
   \end{itemize}
 \end{frame}
 
@@ -560,11 +572,12 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
   \frametitle{Incremental Linearization}
   \begin{itemize}
     \item If $\psi'$ is satisfiable, not necessarily $\psi$ is. In this cast, the method incrementally introduces
-          new lemmas blocking spurious solutions.
+          new lemmas blocking spurious solutions
+    \pause
     \vfill
 \begin{tcolorbox}[colback=green!5,colframe=green!40!black,title=Example]
   Let $\psi = x^{2} + y^{2} \le 2 \wedge (x \le -1.1 \lor x \ge 1.1) \wedge (y \le -1.1 \lor y \ge 1.1)$.
-  $\psi'$ is the same, but instead of $x^{2}$ and $y^{2}$ we have $f_{*}(x, x)$ e $f_{*}(y, y)$.
+  $\psi'$ is the same, but instead of $x^{2}$ and $y^{2}$ we have $f_{*}(x, x)$ and $f_{*}(y, y)$.
   It is possible to interpret $f_*$ in such a way that $\psi'$ is satisfied, but the original formula is unsatisfiable.
 \end{tcolorbox}
   \end{itemize}
@@ -574,9 +587,11 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
   \frametitle{Incremental Linearization}
   \begin{itemize}
     \item Spurious solutions involving variable multiplication are blocked through the \textit{tangent plane} equation
-          and some sign properties.
+          and some sign properties
+    \pause
 
-    \vitem Spurious solutions involving transcendental functions are blocked using their \textit{Taylor polynomial}.
+    \vitem Spurious solutions involving transcendental functions are blocked using their \textit{Taylor polynomial}
+    \pause
 
   \begin{figure}
   \centering
@@ -610,32 +625,45 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
 \begin{frame}
   \frametitle{Proof Calculus}
   \begin{itemize}
-    \item cvc5 implements a slightly modified version of this algorithm.
-    \vitem The solver also defines a \textit{proof calculus} composed of 21 lemmas capturing its reasoning.
-    \vitem These lemmas are, for the most part, the rules that eliminate spurious solutions.
+    \item cvc5 implements a slightly modified version of this method
+    \pause
+    \vitem The solver also defines a \textit{proof calculus} composed of 21 lemmas capturing its reasoning
+    \pause
+    \vitem Types of lemmas
+         \begin{itemize}
+                 \item Rules eliminating spurious solutions
+                 \item Phase shifting for $\sin$
+                 \item Bounding $\pi$
+         \end{itemize}
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Other transcendental functions}
   \begin{itemize}
-    \item $\sin$ and $\exp$ are the only ones directly handled.
+    \item $\sin$ and $\exp$ are the only functions directly handled
+    \pause
     \vitem $\cos(x) = \sin(x + \frac{\pi}{2})$
+    \pause
     \vitem $\tan(x) = \frac{\sin(x)}{\cos(x)}$
+    \pause
     \vitem $\sec(x) = \frac{1}{\cos(x)}$
-    \vitem $\log$ and inverse trigonometric functions are modeled with new variables. For instance, if the input formula has the term $\log(1 + x)$ we introduce a new variable $y$ and add the assertion $\exp(y) = 1 + x$.
+    \pause
+    \vitem $\log$ and inverse trigonometric functions are modeled with new variables. For instance, if the input formula has the term $\log(1 + x)$ we introduce a new variable $y$ and add the assertion $\exp(y) = 1 + x$
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Contributions}
   \begin{itemize}
-    \item In this work we mechanize proofs of all the lemmas in the proof calculus using the Lean proof assistant.
+    \item In this work we mechanize proofs of all the lemmas in the proof calculus using the Lean proof assistant
           \begin{itemize}
                   \item \textit{lean-smt}
           \end{itemize}
-    \vitem In this process, we identified missing hypothesis in its documentation, as well as some other inaccuracies.
-    \vitem This is the first step towards reconstructing proofs of this algorithm in Lean.
+    \pause
+    \vitem In this process, we identified some errors in the documentation, which were fixed
+    \pause
+    \vitem Increase confidence in cvc5's implementation of incremental linearization
 
   \end{itemize}
 \end{frame}
@@ -648,9 +676,13 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
 
 \begin{center}
   $\infer[]{xy \le bx + ay - ab \leftrightarrow ((x \le a \land y \ge b) \lor (x \ge a \land y \le b))}{- \mid x, y, a, b}$
+
 \end{center}
 
+\vspace{30pt}
+
 \begin{center}
+
   $\infer[]{xy \ge bx + ay - ab \leftrightarrow ((x \le a \land y \le b) \lor (x \ge a \land y \ge b))}{- \mid x, y, a, b}$
 \end{center}
 
@@ -660,27 +692,52 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
   \frametitle{Lemmas on multiplication - ARITH\_MULT\_TANGENT}
 
   \begin{lstlisting}
-  theorem arithMulTangentLower {α : Type} [LinearOrderedField α] (x y a b : α) :
+  theorem arithMulTangentLower (x y a b : ℝ) :
       x * y ≤ b * x + a * y - a * b ↔ ((x ≤ a ∧ y ≥ b) ∨ (x ≥ a ∧ y ≤ b))
+
   \end{lstlisting}
 
   \begin{lstlisting}
-  theorem arithMulTangentUpper {α : Type} [LinearOrderedField α] (x y a b : α) :
+
+  theorem arithMulTangentUpper (x y a b : ℝ) :
       x * y ≥ b * x + a * y - a * b ↔ ((x ≤ a ∧ y ≤ b) ∨ (x ≥ a ∧ y ≥ b))
   \end{lstlisting}
 
 \end{frame}
 
+% \begin{frame}
+%   \frametitle{Lemmas on multiplication - ARITH\_MULT\_COMPARISON\_ABS}
+
+%   \begin{center}
+%     $\infer[]{|t_1 \cdots t_n| \bowtie |s_1 \cdots s_n|}{|t_1| \bowtie_1 |s_1| \wedge \ldots \wedge |t_n| \bowtie_n |s_n|}$ \\
+
+%   \end{center}
+
+%   \vspace{20pt}
+
+%   The relation in the conclusion is either $>$ or $=$. If it is $=$, then each $\bowtie_i$ is $=$. Otherwise, each
+%   $\bowtie_i$ is either $>$ or $=$ (with at least one $>$) and no $t_i$ is $0$.
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Lemmas on multiplication - ARITH\_MULT\_COMPARISON\_ABS}
+
+%   foo bar
+% \end{frame}
+
+
 \begin{frame}
   \frametitle{Lemmas on multiplication - ARITH\_MULT\_SIGN}
 
 \begin{center}
-  $\infer[]{m \bowtie 0}{f_{1}, \cdots, f_{k} \mid m}$
+  $\infer[]{m \bowtie 0}{f_{1} \wedge \cdots \wedge f_{k} \mid m}$
 \end{center}
-Each $f_i$ has the form $x_j \bowtie 0$. $m$ is a monomial composed by powers of the $x_i$'s. The relation in
-the conclusion is defined based on the parity of the exponents and on the sign of each $x_i$.
 
-% Cada $f_{i}$ é da forma $x_{i} \bowtie 0$. $m$ é um monômio composto por potências dos $x_{i}$'s. A conclusão é definida com base na paridade dos expoentes e no sinal de cada $x_{i}$.
+\vspace{20pt}
+
+Each $f_i$ has the form $x_j \bowtie 0$. $m$ is a monomial composed by powers of the $x_i$'s. The relation in
+the conclusion is defined based on the parity of the exponents and on the sign of each $x_i$
+
 \end{frame}
 
 \begin{frame}[fragile]
@@ -702,20 +759,21 @@ the conclusion is defined based on the parity of the exponents and on the sign o
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Lemmas for transcendental functions - Bounding $\exp$ e $\sin$}
+  \frametitle{Lemmas for transcendental functions - Bounding $\exp$ and $\sin$}
 \begin{center}
-$\infer[]{t \geq c \rightarrow \exp(t) \geq \texttt{maclaurin}(\exp, d, c)}{- \mid d,c,t}$
+$\infer[]{t \geq c \rightarrow \exp(t) \geq \texttt{maclaurin}(\exp, d, c)}{d \text{ odd} \mid d,c,t}$
 \end{center}
 
-Where $d$ is an odd number.
+\vspace{15pt}
 
 \begin{center}
   $\infer[]{t \in [l, u] \rightarrow
-  \sin(t) \geq \texttt{secant}(\sin, l, u, t)}{- \mid d,t,l,u}$
+  \sin(t) \geq \texttt{secant}(\sin, l, u, t)}{d \equiv 3 \text{ mod $4^*$} \wedge (0 < l \wedge u \le \pi)^* \mid d,t,l,u}$
 \end{center}
 
-Where $d$ is congruent to $3$ modulo $4^*$, $\sin$ is concave in the interval $[l, u]^*$ and \texttt{secant}
-is the secant line to the $d$-th Taylor polynomial at the points $(l, p(l))$ and $(r, p(r))$.
+\vspace{15pt}
+
+Where \texttt{secant} is the secant line to the $d$-th Taylor polynomial at the points $(l, p(l))$ and $(u, p(u))$
 
 \end{frame}
 
@@ -726,18 +784,19 @@ is the secant line to the $d$-th Taylor polynomial at the points $(l, p(l))$ and
 
     \vfill
     \begin{center}
-      $f(x) - \left( \mathlarger{\sum_{j=0}^{n}}\dfrac{f^{(j)}(x_0)}{j!}(x - x_0)^j \right) = \dfrac{f^{(n+1)}(x')}{(n+1)!}(x - x_0)^{n+1}$
+      $\exists x' \in [x_0, x], f(x) - \left( \mathlarger{\sum_{j=0}^{n}}\dfrac{f^{(j)}(x_0)}{j!}(x - x_0)^j \right) = \dfrac{f^{(n+1)}(x')}{(n+1)!}(x - x_0)^{n+1}$
     \end{center}
+    \pause
           \vitem This formula already existed in mathlib,
-          but with the additional hypothesis that $x_0 < x$. We extended it to the general version.
+          but with the additional hypothesis that $x_0 < x$. We extended it to the general version
   \end{itemize}
 \end{frame}
 
 \begin{frame}[fragile]
-  \frametitle{Lemmas for transcendental functions - Bounding $\exp$ e $\sin$}
+  \frametitle{Lemmas for transcendental functions - Bounding $\exp$ and $\sin$}
 \begin{lstlisting}
-theorem arithTransExpApproxBelow (d n : ℕ) (_ : d = 2*n + 1) :
-  Real.exp x ≥ taylorWithinEval Real.exp d Set.univ 0 x
+theorem arithTransExpApproxBelow (d c t : ℕ) :
+  Odd d → t ≥ c → Real.exp t ≥ taylorWithinEval Real.exp d Set.univ 0 c
 
 
 
@@ -752,9 +811,18 @@ theorem arithTransSineApproxBelowPos (d k : ℕ) (hd : d = 4 * k + 3) (t l u : �
   \frametitle{Future Work}
   \begin{itemize}
     \item Proof reconstruction using \textit{lean-smt}
+          \begin{itemize}
+                  \item cvc5 emits a proof written in terms of these rules and the rest of its proof calculus (CPC)
+                  \item lean-smt is capable of translating this to a Lean proof and checking it
+          \end{itemize}
+    \pause
     \vitem Challenges with real numbers
+    \pause
+    \vitem Arbitrary $\pi$ approximation
   \end{itemize}
 \end{frame}
+
+\section{Thanks! Questions?}
 
 \end{document}
 
