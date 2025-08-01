@@ -260,13 +260,13 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
   \texorpdfstring{
 \textbf{Tomaz Mascarenhas}\footnotemark[1], Harun Khan\footnote{Equal contribution}, Abdalrhman Mohamed, Andrew Reynolds, Haniel Barbosa, Clark Barrett, Cesare Tinelli
       \vspace{3ex}
-    % \begin{columns}
-    %   \column{.45\linewidth}
-    %     \centering
-    %     \includegraphics[height=0.25\textheight]{images/DCC_LOGO.jpg}
-    %   \column{.35\linewidth}
-    %     \includegraphics[height=0.15\textheight]{images/Logo_UFMG.jpg}
-    % \end{columns}
+    \begin{columns}
+      \column{.45\linewidth}
+        \centering
+        \includegraphics[height=0.25\textheight]{images/DCC_LOGO.jpg}
+      \column{.35\linewidth}
+        \includegraphics[height=0.15\textheight]{images/Logo_UFMG.jpg}
+    \end{columns}
   }
   {}
 }
@@ -532,7 +532,7 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
 }
 \addtocounter{framenumber}{-1}
 
-\section{Background}
+% \section{Background}
 
 \begin{frame}
   \frametitle{Nonlinear Arithmetic and Transcendental Functions}
@@ -626,7 +626,7 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
   \begin{itemize}
     \item cvc5 implements a slightly modified version of this method
     \pause
-    \vitem The solver also defines a \textit{proof calculus} composed of 21 lemmas capturing its reasoning
+    \vitem The solver also defines a \textit{proof calculus} composed of 21 inference rules capturing its reasoning
     \pause
     \vitem Types of lemmas
          \begin{itemize}
@@ -673,7 +673,7 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
   \frametitle{Lemmas on multiplication - ARITH\_MULT\_TANGENT}
 
 \begin{center}
-  $\infer[]{xy \le bx + ay - ab \leftrightarrow ((x \le a \land y \ge b) \lor (x \ge a \land y \le b))}{- \mid x, y, a, b}$
+  $\infer[]{\forall x \forall y, xy \le bx + ay - ab \leftrightarrow ((x \le a \land y \ge b) \lor (x \ge a \land y \le b))}{- \mid a, b}$
 
 \end{center}
 
@@ -681,7 +681,7 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
 
 \begin{center}
 
-  $\infer[]{xy \ge bx + ay - ab \leftrightarrow ((x \le a \land y \le b) \lor (x \ge a \land y \ge b))}{- \mid x, y, a, b}$
+  $\infer[]{\forall x \forall y, xy \ge bx + ay - ab \leftrightarrow ((x \le a \land y \le b) \lor (x \ge a \land y \ge b))}{- \mid a, b}$
 \end{center}
 
 \end{frame}
@@ -690,14 +690,14 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
   \frametitle{Lemmas on multiplication - ARITH\_MULT\_TANGENT}
 
   \begin{lstlisting}
-  theorem arithMulTangentLower (x y a b : ℝ) :
+  theorem arithMulTangentLower (a b x y : ℝ) :
       x * y ≤ b * x + a * y - a * b ↔ ((x ≤ a ∧ y ≥ b) ∨ (x ≥ a ∧ y ≤ b))
 
   \end{lstlisting}
 
   \begin{lstlisting}
 
-  theorem arithMulTangentUpper (x y a b : ℝ) :
+  theorem arithMulTangentUpper (a b x y : ℝ) :
       x * y ≥ b * x + a * y - a * b ↔ ((x ≤ a ∧ y ≤ b) ∨ (x ≥ a ∧ y ≥ b))
   \end{lstlisting}
 
@@ -742,17 +742,23 @@ the conclusion is defined based on the parity of the exponents and on the sign o
   \frametitle{Lemmas on multiplication - ARITH\_MULT\_SIGN}
 
   \begin{lstlisting}
-    theorem powNegOdd      : ∀ {k : ℕ} {r : ℝ}, r < 0 → Odd k  → r ^ k < 0
-    theorem powNegEven     : ∀ {k : ℕ} {r : ℝ}, r < 0 → Even k → r ^ k > 0
-    theorem nonZeroEvenPow : ∀ {k : ℕ} {r : ℝ}, r ≠ 0 → Even k → r ^ k > 0
-    theorem powPos         : ∀ {k : ℕ} {r : ℝ}, r > 0           → r ^ k > 0
+    lemma powNegOdd      : ∀ {k : ℕ} {r : ℝ}, r < 0 → Odd k  → r ^ k < 0
+    lemma powNegEven     : ∀ {k : ℕ} {r : ℝ}, r < 0 → Even k → r ^ k > 0
+    lemma nonZeroEvenPow : ∀ {k : ℕ} {r : ℝ}, r ≠ 0 → Even k → r ^ k > 0
+    lemma powPos         : ∀ {k : ℕ} {r : ℝ}, r > 0           → r ^ k > 0
   \end{lstlisting}
 
   \begin{lstlisting}
-    theorem combineSigns₁ : ∀ {a b : ℝ}, a > 0 → b > 0 → b * a > 0
-    theorem combineSigns₂ : ∀ {a b : ℝ}, a > 0 → b < 0 → b * a < 0
-    theorem combineSigns₃ : ∀ {a b : ℝ}, a < 0 → b > 0 → b * a < 0
-    theorem combineSigns₄ : ∀ {a b : ℝ}, a < 0 → b < 0 → b * a > 0
+    lemma combineSigns₁ : ∀ {a b : ℝ}, a > 0 → b > 0 → b * a > 0
+    lemma combineSigns₂ : ∀ {a b : ℝ}, a > 0 → b < 0 → b * a < 0
+    lemma combineSigns₃ : ∀ {a b : ℝ}, a < 0 → b > 0 → b * a < 0
+    lemma combineSigns₄ : ∀ {a b : ℝ}, a < 0 → b < 0 → b * a > 0
+  \end{lstlisting}
+
+  \begin{lstlisting}
+    example (a b c : Real) :
+        a > 0 → b < 0 → c > 0 → a ^ 2 * b ^ 3 * c ^ 3 < 0 :=
+      by arithMulSign [a,b,c], [1,-1,1], [2,3,3]
   \end{lstlisting}
 \end{frame}
 
