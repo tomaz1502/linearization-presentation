@@ -1,10 +1,6 @@
-% TODO: See if we should add something for proof reconstruction (Abdal's slides?)
-%   No, but talk a bit about it in future work
-%   How does the workflow work for just checking? How the statement is translated to Lean?
-%   Maybe it is not translated directly, just the proof is checked but without checking whether we're proving the right thing?
-%   the answer is here: https://github.com/abdoo8080/lean-cpc-checker/blob/c513efca48c82ec8ab3587adf5f762be28286b9a/Checker.lean
 % Check a bit Harun's section of the ITP paper to say some words about the proofs
 % of stuff about Taylor polynomials
+% * As a motivation, on which problems (size, complexity, relevance, ...) does incremental linearisation succeed to give an answer? Can the practical use of the presented work be estimated? (Check Cimatti)
 
 \documentclass[usepdftitle=false,aspectratio=169,usenames,dvipsnames]{beamer}
 \usepackage{amsmath, amsfonts, amssymb}
@@ -536,6 +532,8 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
 }
 \addtocounter{framenumber}{-1}
 
+\section{Background}
+
 \begin{frame}
   \frametitle{Nonlinear Arithmetic and Transcendental Functions}
   \begin{itemize}
@@ -549,15 +547,14 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
                   \item Automation in proof assistants, if provided the necessary tooling
           \end{itemize}
     \pause
-          \vitem Currently, no solver with complexity better than doubly-exponential for QF\_NRA, and QF\_NTA has been shown to be
-          to be undecidable
+          \vitem QF\_NRA requires exponential time to solve and QF\_NTA has been shown to be to be undecidable
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Incremental Linearization}
   \begin{itemize}
-    \item \textit{Incremental linearization} is a method introduced by Cimatti et al.\ for deciding the satisfiability of formulas in QF\_NTA
+    \item \textit{Incremental linearization} is a method introduced by Cimatti et al.\ (2018) for deciding the satisfiability of formulas in QF\_NTA
           \begin{itemize}
                   \item Not a decision procedure
           \end{itemize}
@@ -571,7 +568,7 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
 \begin{frame}
   \frametitle{Incremental Linearization}
   \begin{itemize}
-    \item If $\psi'$ is satisfiable, not necessarily $\psi$ is. In this cast, the method incrementally introduces
+    \item If $\psi'$ is satisfiable, not necessarily $\psi$ is. In this case, the method incrementally introduces
           new lemmas blocking spurious solutions
     \pause
     \vfill
@@ -590,19 +587,21 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
           and some sign properties
     \pause
 
-    \vitem Spurious solutions involving transcendental functions are blocked using their \textit{Taylor polynomial}
-    \pause
 
   \begin{figure}
   \centering
   \includegraphics[scale=0.1]{images/tanPlane.png}
   \caption*{Source: Cimatti et al.}
   \end{figure}
+    \pause
+
+    \item Spurious solutions involving transcendental functions are blocked using their \textit{Taylor polynomial}
   \end{itemize}
 \end{frame}
 
 \begin{frame}
   \frametitle{Incremental Linearization}
+
   \begin{algorithmic}[1]
     \Function{IncrementalLinearization}{$\psi$}
       \State $\psi' \gets$ \Call{InitialAbstraction}{$\psi$}
@@ -663,8 +662,7 @@ maxalphanames= 4, maxcitenames = 3, minalphanames = 3, minnames = 3]{biblatex}
     \pause
     \vitem In this process, we identified some errors in the documentation, which were fixed
     \pause
-    \vitem Increase confidence in cvc5's implementation of incremental linearization
-
+    \vitem Increase confidence in the proof calculus and, once cvc5 emits proofs using the calculus, in its implementation
   \end{itemize}
 \end{frame}
 
@@ -813,7 +811,8 @@ theorem arithTransSineApproxBelowPos (d k : â„•) (hd : d = 4 * k + 3) (t l u : â
     \item Proof reconstruction using \textit{lean-smt}
           \begin{itemize}
                   \item cvc5 emits a proof written in terms of these rules and the rest of its proof calculus (CPC)
-                  \item lean-smt is capable of translating this to a Lean proof and checking it
+                  \item lean-smt translates this to a Lean proof and checks it (the Lean theorem is inferred)
+                  \item Or one can start with a Lean goal and use lean-smt to translate it to an SMT-LIB query
           \end{itemize}
     \pause
     \vitem Challenges with real numbers
